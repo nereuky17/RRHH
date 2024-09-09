@@ -1,0 +1,11 @@
+/home/curso02/rrhh/BACKEND/src/main/java/com/rrhh/empresa/RrhhApplication.java
+/home/curso02/rrhh/BACKEND/src/main/java/com/rrhh/empresa/controller/EmpleadoController.java
+/home/curso02/rrhh/BACKEND/src/main/java/com/rrhh/empresa/controller/EmpresaController.java
+/home/curso02/rrhh/BACKEND/src/main/java/com/rrhh/empresa/dto/EmpleadoDTO.java
+/home/curso02/rrhh/BACKEND/src/main/java/com/rrhh/empresa/dto/EmpresaDTO.java
+/home/curso02/rrhh/BACKEND/src/main/java/com/rrhh/empresa/model/Empleado.java
+/home/curso02/rrhh/BACKEND/src/main/java/com/rrhh/empresa/model/Empresa.java
+/home/curso02/rrhh/BACKEND/src/main/java/com/rrhh/empresa/repository/EmpleadoRepository.java
+/home/curso02/rrhh/BACKEND/src/main/java/com/rrhh/empresa/repository/EmpresaRepository.java
+/home/curso02/rrhh/BACKEND/src/main/java/com/rrhh/empresa/service/EmpleadoService.java
+/home/curso02/rrhh/BACKEND/src/main/java/com/rrhh/empresa/service/EmpresaService.java
