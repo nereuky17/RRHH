@@ -1,9 +1,7 @@
 package com.rrhh.empresa.model;
 
-import java.util.Date;
+import java.time.LocalDate;
 
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -47,6 +45,7 @@ public class Empleado {
 
     @Column
     @Email(message = "El email debe tener un formato válido")
+    @Size(max = 255, message = "El email no puede exceder los 255 caracteres")
     private String email;
 
     @Column
@@ -57,15 +56,14 @@ public class Empleado {
     @Size(max = 50, message = "La posición no puede exceder los 50 caracteres")
     private String posicion;
 
-    @Temporal(TemporalType.DATE)
     @NotNull(message = "La fecha de contratación es obligatoria")
-    private Date fechaContratacion;
+    private LocalDate fechaContratacion;
 
     // Constructores
     public Empleado() {
     }
 
-    public Empleado(Empresa empresa, String nombre, String apellido, String dni, String email, String telefono, String posicion, Date fechaContratacion) {
+    public Empleado(Empresa empresa, String nombre, String apellido, String dni, String email, String telefono, String posicion, LocalDate fechaContratacion) {
         this.empresa = empresa;
         this.nombre = nombre;
         this.apellido = apellido;
@@ -141,11 +139,11 @@ public class Empleado {
         this.posicion = posicion;
     }
 
-    public Date getFechaContratacion() {
+    public LocalDate getFechaContratacion() {
         return fechaContratacion;
     }
 
-    public void setFechaContratacion(Date fechaContratacion) {
+    public void setFechaContratacion(LocalDate fechaContratacion) {
         this.fechaContratacion = fechaContratacion;
     }
 }

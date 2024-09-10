@@ -22,7 +22,7 @@ import jakarta.validation.constraints.Size;
 public class Empresa {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
@@ -30,13 +30,13 @@ public class Empresa {
     @Size(min = 2, max = 100, message = "El nombre de la empresa debe tener entre 2 y 100 caracteres")
     private String nombre;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true) // Agregamos la restricción de unicidad para el CIF
     @NotBlank(message = "El CIF de la empresa es obligatorio")
     @Pattern(regexp = "[A-Z0-9]{8,10}", message = "El CIF debe tener entre 8 y 10 caracteres alfanuméricos")
     private String cif;
 
     @Column
-    @Size(max = 255, message = "La dirección no puede exceder los 255 caracteres")
+    @Size(min = 5, max = 255, message = "La dirección debe tener entre 5 y 255 caracteres")
     private String direccion;
 
     @Column
@@ -45,6 +45,7 @@ public class Empresa {
 
     @Column
     @Email(message = "El email debe tener un formato válido")
+    @Size(max = 255, message = "El email no puede exceder los 255 caracteres")
     private String email;
 
     @Column
@@ -52,11 +53,11 @@ public class Empresa {
     private String pagina_web;
 
     @Column
-    @Size(max = 50, message = "El sector no puede exceder los 50 caracteres")
+    @Size(min = 2, max = 50, message = "El sector debe tener entre 2 y 50 caracteres")
     private String sector;
 
     @Column
-    @Size(max = 50, message = "El país no puede exceder los 50 caracteres")
+    @Size(min = 2, max = 50, message = "El país debe tener entre 2 y 50 caracteres")
     private String pais;
 
     @OneToMany(mappedBy = "empresa", cascade = CascadeType.ALL, orphanRemoval = true)

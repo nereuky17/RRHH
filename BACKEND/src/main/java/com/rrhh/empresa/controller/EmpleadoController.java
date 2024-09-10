@@ -1,7 +1,11 @@
 package com.rrhh.empresa.controller;
 
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import com.rrhh.empresa.dto.EmpleadoDTO;
@@ -9,6 +13,8 @@ import com.rrhh.empresa.model.Empleado;
 import com.rrhh.empresa.model.Empresa;
 import com.rrhh.empresa.service.EmpleadoService;
 import com.rrhh.empresa.service.EmpresaService;
+
+import java.util.HashMap;
 
 import java.util.Optional;
 
@@ -22,35 +28,39 @@ public class EmpleadoController {
     @Autowired
     private EmpresaService empresaService;
 
-    // Crear un nuevo empleado
     @PostMapping("/empresa/{idEmpresa}")
     public ResponseEntity<EmpleadoDTO> crearEmpleado(@PathVariable Long idEmpresa, @RequestBody EmpleadoDTO empleadoDTO) {
         Empresa empresa = empresaService.findById(idEmpresa);
-        Empleado empleado = new Empleado(
-                empresa,
-                empleadoDTO.getNombre(),
-                empleadoDTO.getApellido(),
-                empleadoDTO.getDni(),
-                empleadoDTO.getEmail(),
-                empleadoDTO.getTelefono(),
-                empleadoDTO.getPosicion(),
-                java.sql.Date.valueOf(empleadoDTO.getFechaContratacion())
-        );
-
+        if (empresa == null) {
+            return ResponseEntity.badRequest().body(null);  
+        }
+    
+        Empleado empleado = new Empleado();
+        empleado.setEmpresa(empresa);
+        empleado.setNombre(empleadoDTO.getNombre());
+        empleado.setApellido(empleadoDTO.getApellido());
+        empleado.setDni(empleadoDTO.getDni());
+        empleado.setEmail(empleadoDTO.getEmail());
+        empleado.setTelefono(empleadoDTO.getTelefono());
+        empleado.setPosicion(empleadoDTO.getPosicion());
+        empleado.setFechaContratacion(empleadoDTO.getFechaContratacion());
+    
         empleado = empleadoService.save(empleado);
+    
         EmpleadoDTO responseDTO = new EmpleadoDTO(
-                empleado.getId(),
-                empleado.getNombre(),
-                empleado.getApellido(),
-                empleado.getDni(),
-                empleado.getEmail(),
-                empleado.getTelefono(),
-                empleado.getPosicion(),
-                empleado.getFechaContratacion().toString()
+            empleado.getId(),
+            empleado.getNombre(),
+            empleado.getApellido(),
+            empleado.getDni(),
+            empleado.getEmail(),
+            empleado.getTelefono(),
+            empleado.getPosicion(),
+            empleado.getFechaContratacion()
         );
-
+    
         return ResponseEntity.ok(responseDTO);
     }
+
 
     // Obtener un empleado por ID
     @GetMapping("/{id}")
@@ -66,7 +76,7 @@ public class EmpleadoController {
                     empleado.getEmail(),
                     empleado.getTelefono(),
                     empleado.getPosicion(),
-                    empleado.getFechaContratacion().toString()
+                    empleado.getFechaContratacion()
             );
             return ResponseEntity.ok(empleadoDTO);
         } else {
@@ -74,39 +84,60 @@ public class EmpleadoController {
         }
     }
 
-    // Actualizar empleado por ID
-    @PutMapping("/{id}")
-    public ResponseEntity<EmpleadoDTO> actualizarEmpleado(@PathVariable Long id, @RequestBody EmpleadoDTO empleadoDTO) {
-        Optional<Empleado> empleadoOpt = empleadoService.findById(id);
-        if (empleadoOpt.isPresent()) {
-            Empleado empleado = empleadoOpt.get();
+   // Actualizar empleado por ID
+@PutMapping("/{id}")
+public ResponseEntity<EmpleadoDTO> actualizarEmpleado(@PathVariable Long id, @RequestBody EmpleadoDTO empleadoDTO) {
+    Optional<Empleado> empleadoOpt = empleadoService.findById(id);
+    if (empleadoOpt.isPresent()) {
+        Empleado empleado = empleadoOpt.get();
+
+        // Verifica que los valores no sean nulos o vacíos antes de asignarlos
+        if (empleadoDTO.getNombre() != null && !empleadoDTO.getNombre().isBlank()) {
             empleado.setNombre(empleadoDTO.getNombre());
-            empleado.setApellido(empleadoDTO.getApellido());
-            empleado.setDni(empleadoDTO.getDni());
-            empleado.setEmail(empleadoDTO.getEmail());
-            empleado.setTelefono(empleadoDTO.getTelefono());
-            empleado.setPosicion(empleadoDTO.getPosicion());
-            empleado.setFechaContratacion(java.sql.Date.valueOf(empleadoDTO.getFechaContratacion()));
-
-            empleado = empleadoService.save(empleado);
-
-            EmpleadoDTO responseDTO = new EmpleadoDTO(
-                    empleado.getId(),
-                    empleado.getNombre(),
-                    empleado.getApellido(),
-                    empleado.getDni(),
-                    empleado.getEmail(),
-                    empleado.getTelefono(),
-                    empleado.getPosicion(),
-                    empleado.getFechaContratacion().toString()
-            );
-
-            return ResponseEntity.ok(responseDTO);
-        } else {
-            return ResponseEntity.notFound().build();
         }
-    }
 
+        if (empleadoDTO.getApellido() != null && !empleadoDTO.getApellido().isBlank()) {
+            empleado.setApellido(empleadoDTO.getApellido());
+        }
+
+        if (empleadoDTO.getDni() != null && !empleadoDTO.getDni().isBlank()) {
+            empleado.setDni(empleadoDTO.getDni());
+        }
+
+        if (empleadoDTO.getEmail() != null && !empleadoDTO.getEmail().isBlank()) {
+            empleado.setEmail(empleadoDTO.getEmail());
+        }
+
+        if (empleadoDTO.getTelefono() != null && !empleadoDTO.getTelefono().isBlank()) {
+            empleado.setTelefono(empleadoDTO.getTelefono());
+        }
+
+        if (empleadoDTO.getPosicion() != null && !empleadoDTO.getPosicion().isBlank()) {
+            empleado.setPosicion(empleadoDTO.getPosicion());
+        }
+
+        if (empleadoDTO.getFechaContratacion() != null) {
+            empleado.setFechaContratacion(empleadoDTO.getFechaContratacion());
+        }
+
+        empleado = empleadoService.save(empleado);
+
+        EmpleadoDTO responseDTO = new EmpleadoDTO(
+                empleado.getId(),
+                empleado.getNombre(),
+                empleado.getApellido(),
+                empleado.getDni(),
+                empleado.getEmail(),
+                empleado.getTelefono(),
+                empleado.getPosicion(),
+                empleado.getFechaContratacion()
+        );
+
+        return ResponseEntity.ok(responseDTO);
+    } else {
+        return ResponseEntity.notFound().build();
+    }
+}
     // Eliminar empleado por ID
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminarEmpleado(@PathVariable Long id) {
@@ -118,4 +149,16 @@ public class EmpleadoController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    // Añade este método al controlador
+@ExceptionHandler(MethodArgumentNotValidException.class)
+public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
+    Map<String, String> errors = new HashMap<>();
+    for (FieldError error : ex.getBindingResult().getFieldErrors()) {
+        errors.put(error.getField(), error.getDefaultMessage());
+    }
+    return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+}
+
+
 }

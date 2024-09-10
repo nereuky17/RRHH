@@ -1,6 +1,7 @@
 package com.rrhh.empresa.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -9,6 +10,8 @@ import com.rrhh.empresa.dto.EmpleadoDTO;
 import com.rrhh.empresa.dto.EmpresaDTO;
 import com.rrhh.empresa.model.Empresa;
 import com.rrhh.empresa.service.EmpresaService;
+
+import jakarta.validation.Valid;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -44,7 +47,7 @@ public class EmpresaController {
                                         empleado.getEmail(),
                                         empleado.getTelefono(),
                                         empleado.getPosicion(),
-                                        empleado.getFechaContratacion().toString()
+                                        empleado.getFechaContratacion() // Usamos LocalDate en lugar de String
                                 ))
                                 .collect(Collectors.toList())
                 ))
@@ -65,7 +68,7 @@ public class EmpresaController {
                         empleado.getEmail(),
                         empleado.getTelefono(),
                         empleado.getPosicion(),
-                        empleado.getFechaContratacion().toString()
+                        empleado.getFechaContratacion() // Usamos LocalDate en lugar de String
                 ))
                 .collect(Collectors.toList());
 
@@ -95,7 +98,7 @@ public class EmpresaController {
                                 empleado.getEmail(),
                                 empleado.getTelefono(),
                                 empleado.getPosicion(),
-                                empleado.getFechaContratacion().toString()
+                                empleado.getFechaContratacion() // Usamos LocalDate en lugar de String
                         ))
                         .collect(Collectors.toList())
         );
@@ -114,10 +117,42 @@ public class EmpresaController {
                         empleado.getEmail(),
                         empleado.getTelefono(),
                         empleado.getPosicion(),
-                        empleado.getFechaContratacion().toString()
+                        empleado.getFechaContratacion() // Usamos LocalDate en lugar de String
                 ))
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(empleados);
     }
+
+     @PostMapping
+public ResponseEntity<EmpresaDTO> crearEmpresa(@Valid @RequestBody EmpresaDTO empresaDTO) {
+    Empresa nuevaEmpresa = new Empresa(
+            empresaDTO.getNombre(),
+            empresaDTO.getCif(),
+            empresaDTO.getDireccion(),
+            empresaDTO.getTelefono(),
+            empresaDTO.getEmail(),
+            empresaDTO.getPaginaWeb(),
+            empresaDTO.getSector(),
+            empresaDTO.getPais()
+    );
+
+    Empresa empresaGuardada = empresaService.guardarEmpresa(nuevaEmpresa);
+    
+    EmpresaDTO empresaGuardadaDTO = new EmpresaDTO(
+            empresaGuardada.getId(),
+            empresaGuardada.getNombre(),
+            empresaGuardada.getCif(),
+            empresaGuardada.getDireccion(),
+            empresaGuardada.getTelefono(),
+            empresaGuardada.getEmail(),
+            empresaGuardada.getPaginaWeb(),
+            empresaGuardada.getSector(),
+            empresaGuardada.getPais(),
+            null  // No cargamos empleados aquí, si es necesario cargar, agregar lógica
+    );
+    
+    return ResponseEntity.status(HttpStatus.CREATED).body(empresaGuardadaDTO);
+}
+
 }

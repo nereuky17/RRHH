@@ -21,7 +21,13 @@ public class EmpresaService {
     @Autowired
     private EmpresaRepository empresaRepository;
 
-    // Obtener todas las empresas
+
+    public Empresa guardarEmpresa(Empresa empresa) {
+        
+        return empresaRepository.save(empresa);
+    }
+
+   
     public List<Empresa> findAllEmpresas() {
         return empresaRepository.findAll();
     }
@@ -52,32 +58,30 @@ public class EmpresaService {
         return empresa.getEmpleados(); 
     }
 
-
-
-      // Método para convertir de Empresa a EmpresaDTO
-public EmpresaDTO convertToDTO(Empresa empresa) {
-    return new EmpresaDTO(
-        empresa.getId(),
-        empresa.getNombre(),
-        empresa.getCif(),
-        empresa.getDireccion(),
-        empresa.getTelefono(),
-        empresa.getEmail(),
-        empresa.getPaginaWeb(),
-        empresa.getSector(),
-        empresa.getPais(),
-        empresa.getEmpleados().stream()
-            .map(empleado -> new EmpleadoDTO(
-                empleado.getId(),
-                empleado.getNombre(),
-                empleado.getApellido(),
-                empleado.getDni(),
-                empleado.getEmail(),
-                empleado.getTelefono(),
-                empleado.getPosicion(),
-                empleado.getFechaContratacion().toString()
-            ))
-            .collect(Collectors.toList())
-    );
-}
+    // Método para convertir de Empresa a EmpresaDTO
+    public EmpresaDTO convertToDTO(Empresa empresa) {
+        return new EmpresaDTO(
+            empresa.getId(),
+            empresa.getNombre(),
+            empresa.getCif(),
+            empresa.getDireccion(),
+            empresa.getTelefono(),
+            empresa.getEmail(),
+            empresa.getPaginaWeb(),
+            empresa.getSector(),
+            empresa.getPais(),
+            empresa.getEmpleados().stream()
+                .map(empleado -> new EmpleadoDTO(
+                    empleado.getId(),
+                    empleado.getNombre(),
+                    empleado.getApellido(),
+                    empleado.getDni(),
+                    empleado.getEmail(),
+                    empleado.getTelefono(),
+                    empleado.getPosicion(),
+                    empleado.getFechaContratacion() // Pasamos LocalDate directamente
+                ))
+                .collect(Collectors.toList())
+        );
+    }
 }
