@@ -1,312 +1,272 @@
 <template>
   <div>
-      <h1>Listado de Empresas</h1>
+    <h1 class="title"><br>Gestión de Empresas<br></h1>
 
-      <!-- Botón para mostrar/ocultar los filtros -->
-      <button @click="toggleFiltros">Filtros</button>
-
-      <!-- Sección de filtros -->
-      <div v-if="mostrarFiltros">
-          <h2>Filtros</h2>
-
-          <!-- Filtro de búsqueda por nombre de empresa -->
-          <div>
-              <label for="nombre">Buscar por nombre de empresa:</label>
-              <input type="text" v-model="searchName" placeholder="Nombre de la empresa" />
-              <button @click="buscarPorNombre">Buscar</button>
-          </div>
-
-          <!-- Ordenar empresas alfabéticamente -->
-          <div>
-              <label>Ordenar empresas:</label>
-              <button @click="ordenarAlfabeticamente">Ordenar A-Z</button>
-              <button @click="resetOrden">Reiniciar Orden</button>
-          </div>
+    <!-- Botón de menú desplegable -->
+    <div class="menu-dropdown">
+      <button @click="toggleMenu" class="menu-button">☰</button>
+      <div v-if="menuVisible" class="dropdown-content">
+        <input type="text" v-model="search" placeholder="Filtrar por nombre" @input="filterByName" />
+        <button @click="sortAlphabetically">Ordenar Alfabéticamente</button>
       </div>
+    </div>
 
-      <!-- Tabla de empresas -->
-      <table class="details-table">
-          <thead>
-              <tr>
-                  <th>Nombre</th>
-                  <th>CIF</th>
-                  <th>Dirección</th>
-                  <th>Teléfono</th>
-                  <th>Email</th>
-                  <th>Página Web</th>
-                  <th>Sector</th>
-                  <th>País</th>
-                  <th>Acciones</th>
-              </tr>
-          </thead>
-          <tbody>
-              <tr v-for="empresa in empresasFiltradas" :key="empresa.id">
-                  <td>{{ empresa.nombre }}</td>
-                  <td>{{ empresa.cif }}</td>
-                  <td>{{ empresa.direccion }}</td>
-                  <td>{{ empresa.telefono }}</td>
-                  <td>{{ empresa.email }}</td>
-                  <td>{{ empresa.pagina_web }}</td>
-                  <td>{{ empresa.sector }}</td>
-                  <td>{{ empresa.pais }}</td>
-                  <td>
-                      <button @click="mostrarEmpleados(empresa)">Ver Empleados</button>
-                  </td>
-              </tr>
-              <tr v-if="empresa.mostrarEmpleados" v-for="empleado in empresa.empleados" :key="empleado.id"
-                  class="empleado-row">
-                  <td colspan="9">
-                      <div class="empleado-card">
-                          <img src="@/assets/empleado.png" alt="Foto del empleado" class="empleado-imagen">
-                          <div class="empleado-info">
-                              <p><strong>Nombre:</strong> {{ empleado.nombre }}</p>
-                              <p><strong>Apellido:</strong> {{ empleado.apellido }}</p>
-                              <p><strong>Posición:</strong> {{ empleado.posicion }}</p>
-                              <p><strong>Email:</strong> {{ empleado.email }}</p>
-                          </div>
-                      </div>
-                  </td>
-              </tr>
-          </tbody>
-      </table>
+    <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>CIF</th>
+          <th>Dirección</th>
+          <th>Teléfono</th>
+          <th>Email</th>
+          <th>Página Web</th>
+          <th>Sector</th>
+          <th>País</th>
+          <th>Empleados</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="empresa in filteredEmpresas" :key="empresa.id">
+          <td>{{ empresa.nombre }}</td>
+          <td>{{ empresa.cif }}</td>
+          <td>{{ empresa.direccion }}</td>
+          <td>{{ empresa.telefono }}</td>
+          <td>{{ empresa.email }}</td>
+          <td>{{ empresa.paginaWeb }}</td>
+          <td>{{ empresa.sector }}</td>
+          <td>{{ empresa.pais }}</td>
+          <td>
+            <ul>
+              <li v-for="empleado in empresa.empleados" :key="empleado.id">
+                {{ empleado.nombre }} {{ empleado.apellido }}
+                <!-- Botones para cada empleado -->
+                <button @click="verDetalles(empleado)" v-tooltip="'Ver detalles'">Ver detalles</button>
+                <button @click="editarEmpleado(empleado)" v-tooltip="'Editar'">Editar</button>
+                <button @click="borrarEmpleado(empleado)" v-tooltip="'Borrar'">Borrar</button>
+              </li>
+            </ul>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 
-      <!-- Modal para detalles del empleado -->
-      <div v-if="showModal" class="modal" @click.self="closeModal">
-          <div class="modal-content">
-              <span class="close" @click="closeModal">&times;</span>
-              <div>
-                  <h2>Detalles del Empleado</h2>
-                  <table>
-                      <tbody>
-                          <tr>
-                              <td>Nombre:</td>
-                              <td>{{ empleadoSeleccionado.nombre }}</td>
-                          </tr>
-                          <tr>
-                              <td>Apellido:</td>
-                              <td>{{ empleadoSeleccionado.apellido }}</td>
-                          </tr>
-                          <tr>
-                              <td>Posición:</td>
-                              <td>{{ empleadoSeleccionado.posicion }}</td>
-                          </tr>
-                          <tr>
-                              <td>Email:</td>
-                              <td>{{ empleadoSeleccionado.email }}</td>
-                          </tr>
-                      </tbody>
-                  </table>
-              </div>
-          </div>
-      </div>
+    <div v-if="toastVisible" class="toast">
+      {{ toastMessage }}
+    </div>
   </div>
 </template>
 
 <script>
-import axios from "axios";
-import { ref, computed } from "vue";
+import axios from 'axios';
 
 export default {
-  setup() {
-      const empresas = ref([]);
-      const empleados = ref([]);
-      const empresaSeleccionada = ref(null);
-      const empleadoSeleccionado = ref(null);
-      const searchName = ref(""); // Para búsqueda por nombre
-      const mostrarFiltros = ref(false); // Mostrar/ocultar filtros
-  
-      const showModal = ref(false);
-
-      const empresasFiltradas = computed(() => {
-        if (searchName.value) {
-          return empresas.value.filter(empresa =>
-            empresa.nombre.toLowerCase().includes(searchName.value.toLowerCase())
-          );
-        }
-        return empresas.value;
-      });
-
-      const fetchEmpresas = async () => {
-        try {
-          const response = await axios.get('/api/empresas');
-          empresas.value = response.data;
-        } catch (error) {
-          console.error('Error al obtener empresas:', error);
-        }
-      };
-
-      const mostrarEmpleados = async (empresaId) => {
-        try {
-          const response = await axios.get(`/api/empleados?empresaId=${empresaId}`);
-          empleados.value = response.data;
-        } catch (error) {
-          console.error('Error al obtener empleados:', error);
-        }
-      };
-
-      // Buscar por nombre de empresa
-      const buscarPorNombre = () => {
-          if (searchName.value) {
-              empresasFiltradas.value = empresas.value.filter((empresa) =>
-                  empresa.nombre.toLowerCase().includes(searchName.value.toLowerCase())
-              );
-          }
-      };
-
-      // Ordenar empresas alfabéticamente
-      const ordenarAlfabeticamente = () => {
-          empresasFiltradas.value = [...empresasFiltradas.value].sort((a, b) =>
-              a.nombre.localeCompare(b.nombre)
-          );
-      };
-
-      // Resetear orden y filtros
-      const resetOrden = () => {
-          empresasFiltradas.value = empresas.value;
-          searchName.value = "";
-      };
-
-      // Mostrar/ocultar los filtros
-      const toggleFiltros = () => {
-          mostrarFiltros.value = !mostrarFiltros.value;
-      };
-
-      // Ver detalles del empleado
-      const verDetallesEmpleado = (empleado) => {
-          empleadoSeleccionado.value = empleado;
-          showModal.value = true;
-      };
-
-      // Cerrar modal de detalles
-      const closeModal = () => {
-          showModal.value = false;
-      };
-
-      // Editar empleado
-      const editarEmpleado = (empleado) => {
-          console.log("Editar empleado:", empleado);
-          // Redirigir o mostrar formulario de edición
-      };
-
-      // Eliminar empleado
-      const eliminarEmpleado = async (empleadoId) => {
-          try {
-              await axios.delete(`/api/empleados/${empleadoId}`);
-              mostrarEmpleados(empresaSeleccionada.value); // Refrescar lista de empleados
-          } catch (error) {
-              console.error("Error al eliminar empleado:", error);
-          }
-      };
-
-      fetchEmpresas(); // Obtener empresas al montar el componente
-
-      return {
-          empresas,
-          empleados,
-          empresaSeleccionada,
-          empleadoSeleccionado,
-          searchName,
-          empresasFiltradas,
-          mostrarFiltros,
-          showModal,
-          fetchEmpresas,
-          mostrarEmpleados,
-          verDetallesEmpleado,
-          editarEmpleado,
-          eliminarEmpleado,
-          closeModal,
-          buscarPorNombre,
-          ordenarAlfabeticamente,
-          resetOrden,
-          toggleFiltros,
-      };
+  data() {
+    return {
+      empresas: [],
+      filteredEmpresas: [],
+      menuVisible: false,
+      search: '',
+      toastVisible: false,
+      toastMessage: '',
+    };
   },
+  created() {
+    this.fetchEmpresas();
+  },
+  methods: {
+    async fetchEmpresas() {
+      try {
+        const response = await axios.get('/api/empresas');
+        this.empresas = response.data;
+        this.filteredEmpresas = this.empresas;
+      } catch (error) {
+        console.error('Error al obtener las empresas:', error);
+      }
+    },
+    toggleMenu() {
+      this.menuVisible = !this.menuVisible;
+    },
+    filterByName() {
+      const searchLower = this.search.toLowerCase();
+      this.filteredEmpresas = this.empresas.filter(empresa =>
+        empresa.nombre.toLowerCase().startsWith(searchLower) // Cambia includes() por startsWith()
+      );
+    },
+    sortAlphabetically() {
+      this.filteredEmpresas.sort((a, b) => a.nombre.localeCompare(b.nombre));
+    },
+    async verDetalles(empleado) {
+      try {
+        const response = await axios.get(`/api/empleados/${empleado.id}`);
+        const detalles = response.data;
+        alert(`Detalles de ${detalles.nombre} ${detalles.apellido}: Email: ${detalles.email}, Teléfono: ${detalles.telefono}`);
+      } catch (error) {
+        console.error('Error al obtener detalles del empleado:', error);
+      }
+    },
+    async editarEmpleado(empleado) {
+      alert(`Editar a ${empleado.nombre} ${empleado.apellido}`);
+    },
+    async borrarEmpleado(empleado) {
+      if (confirm(`¿Estás seguro de que quieres borrar a ${empleado.nombre} ${empleado.apellido}?`)) {
+        try {
+          await axios.delete(`/api/empleados/${empleado.id}`);
+          this.toastMessage = `Empleado ${empleado.nombre} ${empleado.apellido} eliminado`;
+          this.toastVisible = true;
+          setTimeout(() => {
+            this.toastVisible = false;
+          }, 3000);
+          this.fetchEmpresas();
+        } catch (error) {
+          console.error('Error al borrar empleado:', error);
+        }
+      }
+    }
+  }
 };
 </script>
 
 <style scoped>
-.details-table {
-  width: 100%;
-  border-collapse: collapse;
+
+
+.title {
+  text-align: center;
+  color: #000080; 
+  text-decoration: underline;
   margin-bottom: 20px;
 }
 
-.details-table th,
-.details-table td {
-  border: 1px solid #ddd;
-  padding: 8px;
+
+.table-container {
+  max-height: 400px;
+  overflow-y: auto; 
+  overflow-x: auto; 
+  width: 100%; 
 }
 
-.details-table th {
-  background-color: #f2f2f2;
-}
-
-button {
-  margin: 5px;
-}
-
-input {
-  margin: 10px 0;
-}
-
-.empleado-row {
-  background-color: #f9f9f9;
-}
-
-.empleado-card {
-  display: flex;
-  align-items: center;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  margin-bottom: 10px;
-}
-
-.empleado-imagen {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  margin-right: 10px;
-}
-
-.empleado-info {
-  display: flex;
-  flex-direction: column;
-}
-
-.modal {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: fixed;
-  z-index: 1;
-  left: 0;
-  top: 0;
+table {
   width: 100%;
-  height: 100%;
-  overflow: auto;
-  background-color: rgba(0, 0, 0, 0.5);
+  border-collapse: collapse;
 }
 
-.modal-content {
-  background-color: #fff;
-  padding: 20px;
-  border-radius: 5px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-  text-align: center;
+th,
+td {
+  border: 1px solid #000080;
+  padding: 8px;
+  text-align: left;
 }
 
-.close {
-  color: #aaa;
-  float: right;
-  font-size: 28px;
-  font-weight: bold;
+th {
+  background-color: #000080;
+  color: white;
 }
 
-.close:hover,
-.close:focus {
-  color: black;
-  text-decoration: none;
+tbody tr:nth-child(even) {
+  background-color: #f2f9ff;
+}
+
+tbody tr:nth-child(odd) {
+  background-color: #ffffff;
+}
+
+td {
+  color: #000000;
+}
+td:last-child {
+  width: 200px;
+}
+
+h1 {
+  color: #000080;
+  text-decoration: underline;
+}
+
+
+.menu-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.menu-button {
+  background-color: #000080;
+  color: white;
+  padding: 10px;
+  border: none;
   cursor: pointer;
+  font-size: 16px;
+}
+
+.dropdown-content {
+  display: block;
+  position: absolute;
+  background-color: white;
+  min-width: 200px;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+}
+
+.dropdown-content input {
+  width: 100%;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+.dropdown-content button {
+  background-color: #000080;
+  color: white;
+  padding: 10px;
+  width: 100%;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+}
+
+.dropdown-content button:hover {
+  background-color: #000066;
+}
+
+
+.toast {
+  background-color: #000080;
+  color: white;
+  padding: 10px;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  border-radius: 5px;
+}
+
+td button {
+  padding: 5px 10px;
+  font-size: 14px;
+  cursor: pointer;
+  width: 100px; 
+  margin-right: 5px;
+}
+
+
+[tooltip] {
+  position: relative;
+  cursor: pointer;
+}
+
+[tooltip]:before {
+  content: attr(tooltip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: black;
+  color: white;
+  padding: 5px;
+  border-radius: 3px;
+  white-space: nowrap;
+  display: none;
+}
+
+[tooltip]:hover:before {
+  display: block;
 }
 </style>

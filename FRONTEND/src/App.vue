@@ -4,7 +4,7 @@ import { RouterLink, RouterView } from 'vue-router'
 
 <template>
   <header>
-    <img alt="logo" class="logo" src="@/assets/gestoria.png" width="125" height="125" />
+   
 
     <div class="wrapper">
       <nav>
@@ -20,52 +20,100 @@ import { RouterLink, RouterView } from 'vue-router'
 </template>
 
 <style scoped>
+
+body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+
 header {
   line-height: 1.5;
   max-height: 100vh;
   display: block;
+  position: fixed; 
+  top: 0;
+  left: 0; 
+  right: 0; 
+  width: 100%; 
+  background-color: #d0e1ff; 
+  z-index: 1000;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); 
+  padding: 0; 
 }
 
 .logo {
   display: block;
-  margin: 0 auto 0;
-}
-
-
-
-nav a.router-link-exact-active {
-  color: var(--color-text);
-}
-
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
+  margin: 0 auto;
 }
 
 nav a {
   display: inline-block;
   padding: 1em;
   border-left: 1px solid var(--color-border);
+  color: var(--color-text);
+  text-decoration: none;
+  transition: background-color 0.3s ease; 
+}
+
+
+nav a.router-link-exact-active {
+  background-color: #000080; 
+  color: white; 
+  font-weight: bold; 
+}
+
+nav a.router-link-exact-active:hover {
+  background-color: #000066;
 }
 
 nav a:first-of-type {
   border: 0;
 }
 
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    align-items: center;
-    padding-right: calc(var(--section-gap) / 2);
+@media (max-width: 768px) {
+  nav a {
+    padding: 0.5em;
+    font-size: 0.9em;
   }
 
   .logo {
-    margin: 0 2rem 0 0;
+    width: 80px;
+    height: 80px;
   }
 
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
+  .content {
+    padding-top: 120px;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  nav a {
+    padding: 0.8em;
+    font-size: 1em;
+  }
+
+  .logo {
+    width: 100px;
+    height: 100px;
+  }
+
+  .content {
+    padding-top: 140px;
+  }
+}
+
+
+@media (min-width: 1025px) {
+  nav a {
+    padding: 1em;
+    font-size: 1.1em;
+  }
+
+  .logo {
+    width: 125px;
+    height: 125px;
   }
 }
 </style>
