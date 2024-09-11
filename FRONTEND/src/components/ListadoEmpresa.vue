@@ -21,7 +21,7 @@
       <table>
         <thead>
           <tr>
-           
+
             <th>Nombre</th>
             <th>CIF</th>
             <th>Dirección</th>
@@ -37,7 +37,7 @@
         </thead>
         <tbody>
           <tr v-for="empresa in filteredEmpresas" :key="empresa.id">
-           
+
             <td>{{ empresa.nombre }}</td>
             <td>{{ empresa.cif }}</td>
             <td>{{ empresa.direccion }}</td>
@@ -47,28 +47,29 @@
             <td>{{ empresa.sector }}</td>
             <td>{{ empresa.pais }}</td>
             <td>
-  <button class="action-button" @click="mostrarEmpleados(empresa)">Ver Empleados</button>
-</td>
-<td>
-  <button class="action-button" @click="abrirModalEditarEmpresa(empresa)">Editar Empresa</button>
-</td>
-<td>
-  <button class="action-button delete-button" @click="confirmarBorrarEmpresa(empresa)">Borrar Empresa</button>
-</td>
+              <button class="action-button" @click="mostrarEmpleados(empresa)">Ver Empleados</button>
+            </td>
+            <td>
+              <button class="action-button" @click="abrirModalEditarEmpresa(empresa)">Editar Empresa</button>
+            </td>
+            <td>
+              <button class="action-button delete-button" @click="confirmarBorrarEmpresa(empresa)">Borrar
+                Empresa</button>
+            </td>
           </tr>
         </tbody>
       </table>
     </div>
 
-<!-- Modal de confirmación para borrar empresa -->
-<div v-if="modalBorrarEmpresaVisible" class="modal">
-  <div class="modal-content">
-    <span class="close" @click="cerrarModalBorrarEmpresa">&times;</span>
-    <h2>¿Estás seguro de que deseas eliminar la empresa {{ empresaSeleccionada.nombre }}?</h2>
-    <button class="action-button" @click="borrarEmpresa">Sí, eliminar</button>
-    <button class="action-button" @click="cerrarModalBorrarEmpresa">Cancelar</button>
-  </div>
-</div>
+    <!-- Modal de confirmación para borrar empresa -->
+    <div v-if="modalBorrarEmpresaVisible" class="modal">
+      <div class="modal-content">
+        <span class="close" @click="cerrarModalBorrarEmpresa">&times;</span>
+        <h2>¿Estás seguro de que deseas eliminar la empresa {{ empresaSeleccionada.nombre }}?</h2>
+        <button class="action-button" @click="borrarEmpresa">Sí, eliminar</button>
+        <button class="action-button" @click="cerrarModalBorrarEmpresa">Cancelar</button>
+      </div>
+    </div>
 
     <!-- Modal para editar empresa -->
     <div v-if="modalEditarEmpresaVisible" class="modal" @click.self="cerrarModalEditarEmpresa">
@@ -267,7 +268,7 @@ export default {
       modalDetallesVisible: false,
       modalEditarVisible: false,
       modalBorrarVisible: false,
-      modalEditarEmpresaVisible: false,  
+      modalEditarEmpresaVisible: false,
       empresaSeleccionada: null,
       empleadoSeleccionado: null,
       modalBorrarEmpresaVisible: false,
@@ -299,12 +300,15 @@ export default {
       }
     },
 
+
     async fetchEmpleados() {
-      try {
-        const response = await axios.get('/api/empleados');
-        this.empleados = response.data;
-      } catch (error) {
-        console.error('Error al obtener los empleados:', error);
+      if (this.empresaSeleccionada) {
+        try {
+          const response = await axios.get(`/api/empresas/${this.empresaSeleccionada.id}/empleados`);
+          this.empleados = response.data;
+        } catch (error) {
+          console.error('Error al obtener los empleados:', error);
+        }
       }
     },
 
@@ -326,7 +330,7 @@ export default {
         await axios.put(`/api/empresas/${this.empresaSeleccionada.id}`, this.empresaSeleccionada);
         this.toastMessage = 'Empresa actualizada correctamente';
         this.toastVisible = true;
-        
+
         setTimeout(() => {
           this.toastVisible = false;
         }, 3000);
@@ -402,34 +406,34 @@ export default {
     },
 
     async guardarCambiosEmpleado() {
-  try {
-    const response = await axios.put(`/api/empleados/${this.empleadoSeleccionado.id}`, this.empleadoSeleccionado);
-    this.toastMessage = 'Empleado actualizado correctamente';
-    this.toastVisible = true;
-    this.modalEditarVisible = false;
-    setTimeout(() => this.toastVisible = false, 3000);
-  
-  } catch (error) {
-    console.error('Error al actualizar el empleado:', error);
-  }
-},
+      try {
+        const response = await axios.put(`/api/empleados/${this.empleadoSeleccionado.id}`, this.empleadoSeleccionado);
+        this.toastMessage = 'Empleado actualizado correctamente';
+        this.toastVisible = true;
+        this.modalEditarVisible = false;
+        setTimeout(() => this.toastVisible = false, 3000);
+        this.fetchEmpleados(); 
+      } catch (error) {
+        console.error('Error al actualizar el empleado:', error);
+      }
+    },
 
-confirmarBorrarEmpleado(empleado) {
-  this.empleadoSeleccionado = { ...empleado };
-  this.modalBorrarVisible = true;
-},
+    confirmarBorrarEmpleado(empleado) {
+      this.empleadoSeleccionado = { ...empleado };
+      this.modalBorrarVisible = true;
+    },
 
-async borrarEmpleado() {
-  try {
-    const response = await axios.delete(`/api/empleados/${this.empleadoSeleccionado.id}`);
-    this.toastMessage = 'Empleado eliminado correctamente';
-    this.toastVisible = true;
-    this.modalBorrarVisible = false;
-    setTimeout(() => this.toastVisible = false, 3000);
-
-  } catch (error) {
-    console.error('Error al eliminar el empleado:', error);
-  }
+    async borrarEmpleado() {
+      try {
+        const response = await axios.delete(`/api/empleados/${this.empleadoSeleccionado.id}`);
+        this.toastMessage = 'Empleado eliminado correctamente';
+        this.toastVisible = true;
+        this.modalBorrarVisible = false;
+        setTimeout(() => this.toastVisible = false, 3000);
+        this.fetchEmpleados(); 
+      } catch (error) {
+        console.error('Error al eliminar el empleado:', error);
+      }
     },
 
     cerrarModalDetalles() {
@@ -480,8 +484,8 @@ async borrarEmpleado() {
         }, 3000);
 
         this.cerrarModalBorrarEmpresa();
-        this.fetchEmpresas(); // Refrescar la lista de empresas
-        this.fetchEmpleados(); // Refrescar la lista de empleados
+        this.fetchEmpresas(); 
+        this.fetchEmpleados(); 
       } catch (error) {
         console.error('Error al eliminar la empresa:', error);
         if (error.response && error.response.status === 409) {
@@ -495,7 +499,7 @@ async borrarEmpleado() {
           this.toastVisible = false;
         }, 3000);
 
-        this.fetchEmpleados(); // Refrescar la lista de empleados
+        this.fetchEmpleados(); 
       }
     }
   }
@@ -525,13 +529,14 @@ async borrarEmpleado() {
   width: 80%;
   max-width: 600px;
   border-radius: 8px;
-  background-color: rgba(200, 200, 200, 0.8); ; 
+  background-color: rgba(200, 200, 200, 0.8);
+  ;
 }
 
 .empleados-modal h2 {
   margin-bottom: 20px;
   font-size: 20px;
-  
+
 }
 
 .table-container {
@@ -554,13 +559,16 @@ button {
 }
 
 .action-button {
-  background-color: #4caf50;; 
+  background-color: #4caf50;
+  ;
   color: white;
 }
 
 .action-button:hover {
-  background-color:  #4caf50;; 
+  background-color: #4caf50;
+  ;
 }
+
 button:hover {
   background-color: #4a87c4;
 }
@@ -574,7 +582,7 @@ button:hover {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(200, 200, 200, 0.8); 
+  background-color: rgba(200, 200, 200, 0.8);
   z-index: 1050;
 }
 
@@ -598,12 +606,13 @@ button:hover {
 }
 
 .delete-button {
-  background-color: #f44336; 
+  background-color: #f44336;
 }
 
 .delete-button:hover {
-  background-color: #d32f2f; 
+  background-color: #d32f2f;
 }
+
 th,
 td {
   border: 1px solid #5c99d6;
@@ -729,7 +738,8 @@ button[type="button"]:hover {
   padding: 20px;
   background-color: #fff;
   border-radius: 5px;
-  max-width: 400px; /* Ajuste para evitar un ancho excesivo */
+  max-width: 400px;
+  /* Ajuste para evitar un ancho excesivo */
   width: 100%;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   position: relative;
@@ -738,17 +748,18 @@ button[type="button"]:hover {
 h2 {
   margin-bottom: 20px;
   font-size: 18px;
-  text-align: center; /* Centramos el título */
+  text-align: center;
+  /* Centramos el título */
 }
 
 p {
   margin: 8px 0;
   line-height: 1.5;
-  word-wrap: break-word; 
+  word-wrap: break-word;
 }
 
 button {
-  align-self: center; 
+  align-self: center;
   background-color: #5c99d6;
   color: white;
   padding: 10px 20px;
@@ -764,14 +775,12 @@ button:hover {
 
 .modal-content p strong {
   display: inline-block;
-  width: 100px; 
+  width: 100px;
 }
 
 .modal-content p span {
   display: inline-block;
-  max-width: 250px; 
-  word-wrap: break-word; 
+  max-width: 250px;
+  word-wrap: break-word;
 }
-
-
 </style>
