@@ -151,6 +151,9 @@
         <p><strong>Posición:</strong> {{ empleadoSeleccionado.posicion }}</p>
         <p><strong>Email:</strong> {{ empleadoSeleccionado.email }}</p>
         <p><strong>Teléfono:</strong> {{ empleadoSeleccionado.telefono }}</p>
+
+
+    
         <button @click="cerrarModalDetalles">Cerrar</button>
       </div>
     </div>
@@ -243,7 +246,7 @@
           </div>
           <div class="form-group button-group">
             <button type="submit">Guardar</button>
-            <button type="button" @click="resetForm">Limpiar</button>
+          
             <button type="button" @click="cerrarModalCrearEmpresa">Cancelar</button>
           </div>
         </form>
@@ -290,6 +293,9 @@ export default {
     this.fetchEmpleados();
   },
   methods: {
+   
+  
+
     async fetchEmpresas() {
       try {
         const response = await axios.get('/api/empresas');
