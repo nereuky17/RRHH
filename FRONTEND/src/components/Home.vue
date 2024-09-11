@@ -2,7 +2,7 @@
   <div class="home">
     <div class="content">
       <img alt="logo" class="logo" src="@/assets/gestoria.png" />
-      <h1>Bienvenido a la Gestoría de empresas</h1>
+      <h1 class="titulo">Bienvenido a la Gestoría de empresas</h1>
     </div>
   </div>
 
@@ -14,20 +14,29 @@
 <style scoped>
 .home {
   display: flex;
-  justify-content: center; /* Centrar horizontalmente */
-  align-items: center; /* Centrar verticalmente */
-  height: 100vh; /* Ocupar toda la altura de la ventana */
-  width: 100vw; /* Ocupar todo el ancho de la ventana */
+  justify-content: center;
+  align-items: center;
+  height: 100vh; 
+  width: 100vw;
+  margin: 0;
+  padding: 0; 
 }
 
 .content {
-  text-align: center; /* Asegura que el texto esté centrado */
+  text-align: center; 
 }
 
 .logo {
-  height: 7cm;
-  width: 9cm;
-  margin-bottom: 2rem; /* Espacio entre la imagen y el texto */
+  display: block;
+  margin: auto;
+ 
+  margin-left: -20%;
+  height: auto;
+  max-width: 60%;
+  margin-bottom: 2rem; 
+}
+.titulo{
+  margin-left: -60%;
 }
 
 button {

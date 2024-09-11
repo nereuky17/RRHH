@@ -57,6 +57,15 @@ public class EmpresaService {
         Empresa empresa = findById(empresaId);
         return empresa.getEmpleados(); 
     }
+    
+    public void eliminarEmpresa(Long id) {
+        Empresa empresa = findById(id);
+        if (!empresa.getEmpleados().isEmpty()) {
+            throw new RuntimeException("No se puede eliminar la empresa porque tiene empleados asociados. Elimine primero los empleados.");
+        }
+        empresaRepository.deleteById(id);
+    }
+    
 
     // Método para convertir de Empresa a EmpresaDTO
     public EmpresaDTO convertToDTO(Empresa empresa) {

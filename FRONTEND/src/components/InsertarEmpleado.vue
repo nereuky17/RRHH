@@ -2,67 +2,101 @@
   <div class="container">
     <div v-if="toastVisible" class="toast">{{ toastMessage }}</div>
 
-    <div class="form-container">
-      <h1>Insertar Nuevo Empleado</h1>
+    <div>
+      <h1 class="title">Gestión de Empleados</h1>
 
-      <form @submit.prevent="validarYCrearEmpleado" class="form">
-        <div class="form-group">
-          <label for="empresa">Empresa:</label>
-          <select v-model="nuevoEmpleado.idEmpresa" required>
-            <option value="" disabled selected>Seleccione una empresa</option>
-            <option v-for="empresa in empresas" :key="empresa.id" :value="empresa.id">
-              {{ empresa.nombre }}
-            </option>
-          </select>
+      <!-- Filtros -->
+      <div class="filters-container">
+        <input type="text" v-model="search" placeholder="Filtrar por nombre" @input="filterByName" />
+        <button @click="sortAlphabetically">Ordenar Alfabéticamente</button>
+        <button @click="resetFilters">Resetear Filtros</button>
+      </div>
+
+      <div class="button-container">
+        <button class="create-button" @click="abrirModalCrearEmpleado">Insertar Empleado</button>
+      </div>
+
+      <!-- Tabla de empleados -->
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Apellido</th>
+              <th>DNI</th>
+              <th>Email</th>
+              <th>Teléfono</th>
+              <th>Posición</th>
+              <th>Fecha de Contratación</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="empleado in filteredEmpleados" :key="empleado.id">
+              <td>{{ empleado.nombre }}</td>
+              <td>{{ empleado.apellido }}</td>
+              <td>{{ empleado.dni }}</td>
+              <td>{{ empleado.email }}</td>
+              <td>{{ empleado.telefono }}</td>
+              <td>{{ empleado.posicion }}</td>
+              <td>{{ empleado.fechaContratacion | formatFecha }}</td>
+              <td>
+                <button class="btn-details" @click="abrirModalDetalles(empleado)">Ver Detalles</button>
+                <button class="btn-edit" @click="abrirModalEditar(empleado)">Editar</button>
+                <button class="btn-delete" @click="confirmarBorrarEmpleado(empleado)">Borrar</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Modal para ver detalles del empleado -->
+      <div v-if="modalDetallesVisible" class="modal" @click.self="cerrarModalDetalles">
+        <div class="modal-content">
+          <span class="close" @click="cerrarModalDetalles">&times;</span>
+          <h2>Detalles del Empleado</h2>
+          <p><strong>Nombre:</strong> {{ empleadoSeleccionado.nombre }}</p>
+          <p><strong>Apellido:</strong> {{ empleadoSeleccionado.apellido }}</p>
+          <p><strong>DNI:</strong> {{ empleadoSeleccionado.dni }}</p>
+          <p><strong>Email:</strong> {{ empleadoSeleccionado.email }}</p>
+          <p><strong>Teléfono:</strong> {{ empleadoSeleccionado.telefono }}</p>
+          <p><strong>Posición:</strong> {{ empleadoSeleccionado.posicion }}</p>
         </div>
+      </div>
 
-        <div class="form-group">
-          <label for="nombre">Nombre:</label>
-          <input type="text" v-model="nuevoEmpleado.nombre" required />
+      <!-- Modal para editar empleado -->
+      <div v-if="modalEditarVisible" class="modal" @click.self="cerrarModalEditar">
+        <div class="modal-content">
+          <span class="close" @click="cerrarModalEditar">&times;</span>
+          <h2>Editar Empleado</h2>
+          <form @submit.prevent="guardarCambiosEmpleado">
+            <div class="form-group">
+              <label for="nombre">Nombre:</label>
+              <input type="text" v-model="empleadoSeleccionado.nombre" required />
+            </div>
+            <div class="form-group">
+              <label for="apellido">Apellido:</label>
+              <input type="text" v-model="empleadoSeleccionado.apellido" />
+            </div>
+            <div class="form-group">
+              <label for="dni">DNI:</label>
+              <input type="text" v-model="empleadoSeleccionado.dni" required />
+            </div>
+            <div class="form-group">
+              <label for="email">Email:</label>
+              <input type="email" v-model="empleadoSeleccionado.email" required />
+            </div>
+            <div class="form-group">
+              <label for="telefono">Teléfono:</label>
+              <input type="text" v-model="empleadoSeleccionado.telefono" required />
+            </div>
+            <div class="form-group">
+              <label for="posicion">Posición:</label>
+              <input type="text" v-model="empleadoSeleccionado.posicion" required />
+            </div>
+            <button type="submit">Guardar cambios</button>
+          </form>
         </div>
-
-        <div class="form-group">
-          <label for="apellido">Apellido:</label>
-          <input type="text" v-model="nuevoEmpleado.apellido" />
-        </div>
-
-        <div class="form-group">
-          <label for="dni">DNI:</label>
-          <input type="text" v-model="nuevoEmpleado.dni" required />
-        </div>
-
-        <div class="form-group">
-          <label for="email">Email:</label>
-          <input type="email" v-model="nuevoEmpleado.email" required />
-        </div>
-
-        <div class="form-group">
-          <label for="telefono">Teléfono:</label>
-          <input type="text" v-model="nuevoEmpleado.telefono" required />
-        </div>
-
-        <div class="form-group">
-          <label for="posicion">Posición:</label>
-          <input type="text" v-model="nuevoEmpleado.posicion" required />
-        </div>
-
-        <div class="form-group">
-          <label for="fechaContratacion">Fecha de Contratación:</label>
-          <input type="date" v-model="nuevoEmpleado.fechaContratacion" required />
-        </div>
-
-        <button type="submit" class="btn">Agregar Empleado</button>
-      </form>
-    </div>
-
-    <!-- Modal para mostrar errores -->
-    <div v-if="modalVisible" class="modal" @click.self="closeModal">
-      <div class="modal-content">
-        <span class="close" @click="closeModal">&times;</span>
-        <h2>Error en el formulario</h2>
-        <ul>
-          <li v-for="(error, index) in errores" :key="index">{{ error }}</li>
-        </ul>
       </div>
     </div>
   </div>
@@ -71,10 +105,19 @@
 <script>
 import axios from 'axios';
 import { ref } from 'vue';
+import moment from 'moment';
 
 export default {
   setup() {
     const empresas = ref([]);
+    const empleados = ref([]);
+    const filteredEmpleados = ref([]);
+    const search = ref('');
+    const toastVisible = ref(false);
+    const toastMessage = ref('');
+    const modalCrearEmpleadoVisible = ref(false);
+    const modalDetallesVisible = ref(false);
+    const modalEditarVisible = ref(false);
     const nuevoEmpleado = ref({
       idEmpresa: '',
       nombre: '',
@@ -85,13 +128,8 @@ export default {
       posicion: '',
       fechaContratacion: ''
     });
+    const empleadoSeleccionado = ref(null);
 
-    const toastVisible = ref(false);
-    const toastMessage = ref('');
-    const modalVisible = ref(false);
-    const errores = ref([]);
-
-    // Método para obtener empresas del backend
     const fetchEmpresas = async () => {
       try {
         const response = await axios.get('/api/empresas');
@@ -101,66 +139,89 @@ export default {
       }
     };
 
-    // Método de validación manual
-    const validarYCrearEmpleado = async () => {
-      errores.value = []; // Limpiar errores previos
-
-      // Validaciones manuales
-      if (!nuevoEmpleado.value.idEmpresa) {
-        errores.value.push('La empresa es obligatoria');
-      }
-      if (nuevoEmpleado.value.nombre.length < 2 || nuevoEmpleado.value.nombre.length > 50) {
-        errores.value.push('El nombre debe tener entre 2 y 50 caracteres');
-      }
-      if (!/^[0-9]{8}[A-Z]$/.test(nuevoEmpleado.value.dni)) {
-        errores.value.push('El DNI debe tener 8 números seguidos de una letra');
-      }
-      if (nuevoEmpleado.value.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(nuevoEmpleado.value.email)) {
-        errores.value.push('El email debe tener un formato válido');
-      }
-      if (!/^[0-9]{8,15}$/.test(nuevoEmpleado.value.telefono)) {
-        errores.value.push('El teléfono debe ser un número válido con un máximo de 15 dígitos');
-      }
-      if (nuevoEmpleado.value.posicion.length > 50) {
-        errores.value.push('La posición no puede exceder los 50 caracteres');
-      }
-
-      // Si hay errores, mostramos el modal
-      if (errores.value.length > 0) {
-        modalVisible.value = true;
-        return;
-      }
-
-      // Si no hay errores, intentamos crear el empleado
+    const fetchEmpleados = async () => {
       try {
-        await axios.post(`/api/empleados/empresa/${nuevoEmpleado.value.idEmpresa}`, nuevoEmpleado.value);
-        toastMessage.value = 'Empleado agregado correctamente';
-        toastVisible.value = true;
-        setTimeout(() => {
-          toastVisible.value = false;
-        }, 3000);
+        const response = await axios.get('/api/empleados');
+        empleados.value = response.data;
+        filteredEmpleados.value = [...empleados.value];
       } catch (error) {
-        // Error del backend
-        errores.value = ['Error desconocido al crear empleado'];
-        modalVisible.value = true;
+        console.error('Error al obtener empleados:', error);
       }
     };
 
-    const closeModal = () => {
-      modalVisible.value = false;
+    const abrirModalDetalles = empleado => {
+      empleadoSeleccionado.value = empleado;
+      modalDetallesVisible.value = true;
+    };
+
+    const cerrarModalDetalles = () => {
+      modalDetallesVisible.value = false;
+    };
+
+    const abrirModalEditar = empleado => {
+      empleadoSeleccionado.value = empleado;
+      modalEditarVisible.value = true;
+    };
+
+    const cerrarModalEditar = () => {
+      modalEditarVisible.value = false;
+    };
+
+    const guardarCambiosEmpleado = async () => {
+      try {
+        await axios.put(`/api/empleados/${empleadoSeleccionado.value.id}`, empleadoSeleccionado.value);
+        toastMessage.value = 'Empleado actualizado correctamente';
+        toastVisible.value = true;
+        modalEditarVisible.value = false;
+        fetchEmpleados();
+      } catch (error) {
+        console.error('Error al actualizar el empleado:', error);
+      }
+    };
+
+    const confirmarBorrarEmpleado = empleado => {
+      if (confirm(`¿Estás seguro de que deseas eliminar a ${empleado.nombre}?`)) {
+        borrarEmpleado(empleado.id);
+      }
+    };
+
+    const borrarEmpleado = async id => {
+      try {
+        await axios.delete(`/api/empleados/${id}`);
+        toastMessage.value = 'Empleado eliminado correctamente';
+        toastVisible.value = true;
+        fetchEmpleados();
+      } catch (error) {
+        console.error('Error al eliminar el empleado:', error);
+      }
+    };
+
+    const formatFecha = fecha => {
+      return moment(fecha, 'YYYY-MM-DD').format('DD/MM/YYYY');
     };
 
     fetchEmpresas();
+    fetchEmpleados();
 
     return {
       empresas,
-      nuevoEmpleado,
-      validarYCrearEmpleado,
+      empleados,
+      filteredEmpleados,
+      search,
       toastVisible,
       toastMessage,
-      modalVisible,
-      errores,
-      closeModal
+      modalCrearEmpleadoVisible,
+      modalDetallesVisible,
+      modalEditarVisible,
+      nuevoEmpleado,
+      empleadoSeleccionado,
+      abrirModalDetalles,
+      cerrarModalDetalles,
+      abrirModalEditar,
+      cerrarModalEditar,
+      guardarCambiosEmpleado,
+      confirmarBorrarEmpleado,
+      formatFecha
     };
   }
 };
@@ -169,73 +230,12 @@ export default {
 <style scoped>
 .container {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
+  padding: 20px;
 }
 
-.form-container {
-  background-color: #f5f5f5;
-  padding: 2rem;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  width: 60%;
-  max-width: 700px;
-}
-
-.form {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 1rem;
-}
-
-label {
-  font-weight: bold;
-  margin-bottom: 0.5rem;
-}
-
-input, select {
-  padding: 0.75rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 1rem;
-  width: 100%;
-}
-
-.btn {
-  background-color: #42b983;
-  color: white;
-  padding: 0.75rem;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 1.1rem;
-  width: 100%;
-}
-
-.btn:hover {
-  background-color: #369b74;
-}
-
-/* Toast styles */
-.toast {
-  background-color: #42b983;
-  color: white;
-  padding: 10px;
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  border-radius: 5px;
-  z-index: 100;
-}
-
-/* Modal styles */
 .modal {
   display: flex;
   justify-content: center;
@@ -252,8 +252,8 @@ input, select {
   background-color: white;
   padding: 20px;
   border-radius: 5px;
-  text-align: center;
   width: 400px;
+  text-align: center;
 }
 
 .close {
@@ -264,7 +264,49 @@ input, select {
   cursor: pointer;
 }
 
-.close:hover {
-  color: red;
+button {
+  padding: 10px 20px;
+  background-color: #42b983;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #369b74;
+}
+
+.btn-details {
+  background-color: #add8e6;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-bottom: 5px;
+  padding: 10px;
+}
+
+.btn-edit {
+  background-color: #42b983;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-bottom: 5px;
+  padding: 10px;
+}
+
+.btn-delete {
+  background-color: #ff6347;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  padding: 10px;
+}
+
+.btn-details:hover, .btn-edit:hover, .btn-delete:hover {
+  opacity: 0.8;
 }
 </style>
