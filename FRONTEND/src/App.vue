@@ -19,9 +19,9 @@ const route = useRoute();
     <!-- Mostrar el fondo y el contenido de bienvenida solo en la ruta "/" -->
     <div v-if="route.path === '/'" class="welcome-background">
       <div class="overlay">
-        <h1 class="titulo">Bienvenido a la Gestoría de empresas</h1>
+        <h1 class="titulo">Bienvenido/a a la Gestoría de empresas</h1>
         <p class="descripcion">
-          En nuestra gestoría, ofrecemos soluciones profesionales para la gestión y administración de su empresa. Nuestro equipo de expertos está preparado para ayudarle en todas las áreas clave de su negocio, desde la contabilidad hasta los recursos humanos. Confíe en nosotros para llevar su empresa al siguiente nivel.
+          En nuestra gestoría, ofrecemos soluciones profesionales para la gestión y administración de su empresa. Nuestro equipo de expertos está preparado para ayudarle en todas las áreas clave de su negocio, desde la contabilidad hasta los recursos humanos. Confíe en nosotros para llevar a su empresa al siguiente nivel.
         </p>
       </div>
     </div>

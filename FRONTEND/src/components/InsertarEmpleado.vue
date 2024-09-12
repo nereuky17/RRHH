@@ -26,8 +26,6 @@
               <th>Apellido</th>
               <th>DNI</th>
               <th>Email</th>
-              <th>Teléfono</th>
-              <th>Posición</th>
               <th>Acciones</th>
             </tr>
           </thead>
@@ -37,8 +35,7 @@
               <td>{{ empleado.apellido }}</td>
               <td>{{ empleado.dni }}</td>
               <td>{{ empleado.email }}</td>
-              <td>{{ empleado.telefono }}</td>
-              <td>{{ empleado.posicion }}</td>
+              
          
 
 

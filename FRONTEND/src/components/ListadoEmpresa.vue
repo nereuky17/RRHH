@@ -2,7 +2,7 @@
 
   <div v-if="toastVisible" class="toast">
     {{ toastMessage }}
-  </div class="content-wrapper">
+  </div >
   <div>
     <h1 class="title"><br>Gestión de Empresas<br></h1>
 
@@ -70,7 +70,7 @@
         <span class="close" @click="cerrarModalBorrarEmpresa">&times;</span>
         <h2>¿Estás seguro de que deseas eliminar la empresa {{ empresaSeleccionada.nombre }}?</h2>
         <button class="action-button" @click="borrarEmpresa">Sí, eliminar</button>
-        <button class="action-button" @click="cerrarModalBorrarEmpresa">Cancelar</button>
+        <button class="action-button delete-button" @click="cerrarModalBorrarEmpresa">Cancelar</button>
       </div>
     </div>
 
@@ -146,7 +146,7 @@
               <td>{{ empleado.telefono }}</td>
               <td>{{ empleado.posicion }}</td>
               <td>     
-            <button @click="verDetalles(empleado)">Ver detalles</button>
+          
             <button @click="editarEmpleado(empleado)">Editar</button>
             <button class="action-button delete-button" @click="confirmarBorrarEmpleado(empleado)">Borrar</button>
 
@@ -158,21 +158,7 @@
       <button class="action-button delete-button" @click="cerrarModalEmpleados">Cerrar</button>
     </div>
 
-    <!-- Modal para ver detalles del empleado -->
-    <div v-if="modalDetallesVisible" class="modal">
-      <div class="modal-content">
-        <span class="close" @click="cerrarModalDetalles">&times;</span>
-        <h2>Detalles del empleado</h2>
-        <p><strong>Nombre:</strong> {{ empleadoSeleccionado.nombre }}</p>
-        <p><strong>Posición:</strong> {{ empleadoSeleccionado.posicion }}</p>
-        <p><strong>Email:</strong> {{ empleadoSeleccionado.email }}</p>
-        <p><strong>Teléfono:</strong> {{ empleadoSeleccionado.telefono }}</p>
-
-
     
-        <button @click="cerrarModalDetalles">Cerrar</button>
-      </div>
-    </div>
 
     <!-- Modal para editar empleado -->
     <div v-if="modalEditarVisible" class="modal">
@@ -183,6 +169,10 @@
           <div class="form-group">
             <label for="nombre">Nombre:</label>
             <input type="text" v-model="empleadoSeleccionado.nombre" required />
+          </div>
+          <div class="form-group">
+            <label for="nombre">Apellido:</label>
+            <input type="text" v-model="empleadoSeleccionado.apellido" required />
           </div>
           <div class="form-group">
             <label for="posicion">Posición:</label>
@@ -209,7 +199,7 @@
       <div class="modal-content">
         <span class="close" @click="cerrarModalBorrar">&times;</span>
         <h2>¿Estás seguro de que deseas eliminar a {{ empleadoSeleccionado.nombre }}?</h2>
-        <button @click="borrarEmpleado">Sí, eliminar</button>
+        <button class="action-button delete-button"@click="borrarEmpleado">Sí, eliminar</button>
         <button @click="cerrarModalBorrar">Cancelar</button>
       </div>
     </div>
@@ -320,15 +310,15 @@ export default {
     },
 
     async fetchEmpleados() {
-      if (this.empresaSeleccionada) {
-        try {
-          const response = await axios.get(`/api/empresas/${this.empresaSeleccionada.id}/empleados`);
-          this.empleados = response.data;
-        } catch (error) {
-          console.error('Error al obtener los empleados:', error);
-        }
-      }
-    },
+  if (this.empresaSeleccionada) {
+    try {
+      const response = await axios.get(`/api/empresas/${this.empresaSeleccionada.id}/empleados`);
+      this.empleados = response.data;
+    } catch (error) {
+      console.error('Error al obtener los empleados:', error);
+    }
+  }
+},
 
     abrirModalEditarEmpresa(empresa) {
       this.empresaSeleccionada = { ...empresa };
@@ -401,7 +391,7 @@ export default {
 
     mostrarEmpleados(empresa) {
       this.empresaSeleccionada = empresa;
-      this.empleados = empresa.empleados;
+      this.fetchEmpleados();
       this.empleadosVisible = true;
     },
 
@@ -685,7 +675,7 @@ td {
   border: none;
   flex: 1;
   margin-right: 10px;
-  /* Espacio entre botones */
+ 
 }
 
 .button-group button:last-child {
@@ -699,7 +689,7 @@ td {
 
 
 button[type="submit"] {
-  background-color: #5c99d6;
+  background-color: #4caf50;
   color: white;
 }
 
@@ -709,7 +699,7 @@ button[type="button"] {
 }
 
 button[type="submit"]:hover {
-  background-color: #4a87c4;
+  background-color: #4caf50;
 }
 
 button[type="button"]:hover {
@@ -723,6 +713,9 @@ button[type="button"]:hover {
   margin-bottom: 20px;
 }
 
+.toast{
+  background-color: #4caf50;
+}
 .tooltip-container {
   position: relative;
   display: inline-block;
@@ -731,7 +724,7 @@ button[type="button"]:hover {
 .tooltip-text {
   visibility: hidden;
   background-color: black;
-  color: #fff;
+  color: #4caf50;
   text-align: center;
   border-radius: 6px;
   padding: 5px;
@@ -746,7 +739,7 @@ button[type="button"]:hover {
   font-size: 12px;
 }
 
-/* Mostrar tooltip al pasar el cursor */
+
 .tooltip-container:hover .tooltip-text {
   visibility: visible;
   opacity: 1;
@@ -760,7 +753,6 @@ button[type="button"]:hover {
   background-color: #fff;
   border-radius: 5px;
   max-width: 400px;
-  /* Ajuste para evitar un ancho excesivo */
   width: 100%;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   position: relative;
@@ -770,7 +762,7 @@ h2 {
   margin-bottom: 20px;
   font-size: 18px;
   text-align: center;
-  /* Centramos el título */
+ 
 }
 
 p {
