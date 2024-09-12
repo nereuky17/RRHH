@@ -1,6 +1,6 @@
 package com.rrhh.empresa.model;
 
-import java.time.LocalDate;
+
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -21,7 +21,7 @@ import jakarta.validation.constraints.Size;
 public class Empleado {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
@@ -56,14 +56,13 @@ public class Empleado {
     @Size(max = 50, message = "La posición no puede exceder los 50 caracteres")
     private String posicion;
 
-    @NotNull(message = "La fecha de contratación es obligatoria")
-    private LocalDate fechaContratacion;
+
 
     // Constructores
     public Empleado() {
     }
 
-    public Empleado(Empresa empresa, String nombre, String apellido, String dni, String email, String telefono, String posicion, LocalDate fechaContratacion) {
+    public Empleado(Empresa empresa, String nombre, String apellido, String dni, String email, String telefono, String posicion) {
         this.empresa = empresa;
         this.nombre = nombre;
         this.apellido = apellido;
@@ -71,7 +70,7 @@ public class Empleado {
         this.email = email;
         this.telefono = telefono;
         this.posicion = posicion;
-        this.fechaContratacion = fechaContratacion;
+
     }
 
     // Getters y Setters
@@ -139,11 +138,5 @@ public class Empleado {
         this.posicion = posicion;
     }
 
-    public LocalDate getFechaContratacion() {
-        return fechaContratacion;
-    }
-
-    public void setFechaContratacion(LocalDate fechaContratacion) {
-        this.fechaContratacion = fechaContratacion;
-    }
+   
 }

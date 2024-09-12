@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "vue": "^3.5.4",
+    "vue-toastification": "^1.7.14"
+  }
+}

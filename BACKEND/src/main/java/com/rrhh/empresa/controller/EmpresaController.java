@@ -84,14 +84,7 @@ public class EmpresaController {
                                                                                 empleado.getDni(),
                                                                                 empleado.getEmail(),
                                                                                 empleado.getTelefono(),
-                                                                                empleado.getPosicion(),
-                                                                                empleado.getFechaContratacion() // Usamos
-                                                                                                                // LocalDate
-                                                                                                                // en
-                                                                                                                // lugar
-                                                                                                                // de
-                                                                                                                // String
-                                                                ))
+                                                                                empleado.getPosicion()))
                                                                 .collect(Collectors.toList())))
                                 .collect(Collectors.toList());
 
@@ -109,9 +102,7 @@ public class EmpresaController {
                                                 empleado.getDni(),
                                                 empleado.getEmail(),
                                                 empleado.getTelefono(),
-                                                empleado.getPosicion(),
-                                                empleado.getFechaContratacion() // Usamos LocalDate en lugar de String
-                                ))
+                                                empleado.getPosicion()))
                                 .collect(Collectors.toList());
 
                 return ResponseEntity.ok(empleados);
@@ -150,10 +141,7 @@ public class EmpresaController {
                                                                 empleado.getDni(),
                                                                 empleado.getEmail(),
                                                                 empleado.getTelefono(),
-                                                                empleado.getPosicion(),
-                                                                empleado.getFechaContratacion() // Usamos LocalDate en
-                                                                                                // lugar de String
-                                                ))
+                                                                empleado.getPosicion()))
                                                 .collect(Collectors.toList()));
                 return ResponseEntity.ok(empresaDTO);
         }
@@ -169,9 +157,7 @@ public class EmpresaController {
                                                 empleado.getDni(),
                                                 empleado.getEmail(),
                                                 empleado.getTelefono(),
-                                                empleado.getPosicion(),
-                                                empleado.getFechaContratacion() // Usamos LocalDate en lugar de String
-                                ))
+                                                empleado.getPosicion()))
                                 .collect(Collectors.toList());
 
                 return ResponseEntity.ok(empleados);

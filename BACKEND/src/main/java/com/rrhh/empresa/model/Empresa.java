@@ -1,5 +1,6 @@
 package com.rrhh.empresa.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -62,7 +63,7 @@ public class Empresa {
 
     @OneToMany(mappedBy = "empresa", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
-    private List<Empleado> empleados;
+    private List<Empleado> empleados=new ArrayList<>();
 
     // Constructores
     public Empresa() {

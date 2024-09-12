@@ -31,12 +31,13 @@ public class EmpleadoController {
 
     // Crear empleado para una empresa
     @PostMapping("/empresa/{idEmpresa}")
-    public ResponseEntity<EmpleadoDTO> crearEmpleado(@PathVariable Long idEmpresa, @RequestBody EmpleadoDTO empleadoDTO) {
+    public ResponseEntity<EmpleadoDTO> crearEmpleado(@PathVariable Long idEmpresa,
+            @RequestBody EmpleadoDTO empleadoDTO) {
         Empresa empresa = empresaService.findById(idEmpresa);
         if (empresa == null) {
-            return ResponseEntity.badRequest().body(null);  
+            return ResponseEntity.badRequest().body(null);
         }
-    
+
         Empleado empleado = new Empleado();
         empleado.setEmpresa(empresa);
         empleado.setNombre(empleadoDTO.getNombre());
@@ -45,21 +46,21 @@ public class EmpleadoController {
         empleado.setEmail(empleadoDTO.getEmail());
         empleado.setTelefono(empleadoDTO.getTelefono());
         empleado.setPosicion(empleadoDTO.getPosicion());
-        empleado.setFechaContratacion(empleadoDTO.getFechaContratacion());
-    
+        ;
+
         empleado = empleadoService.save(empleado);
-    
+
         EmpleadoDTO responseDTO = new EmpleadoDTO(
-            empleado.getId(),
-            empleado.getNombre(),
-            empleado.getApellido(),
-            empleado.getDni(),
-            empleado.getEmail(),
-            empleado.getTelefono(),
-            empleado.getPosicion(),
-            empleado.getFechaContratacion()
+                empleado.getId(),
+                empleado.getNombre(),
+                empleado.getApellido(),
+                empleado.getDni(),
+                empleado.getEmail(),
+                empleado.getTelefono(),
+                empleado.getPosicion()
+
         );
-    
+
         return ResponseEntity.ok(responseDTO);
     }
 
@@ -74,9 +75,7 @@ public class EmpleadoController {
                         empleado.getDni(),
                         empleado.getEmail(),
                         empleado.getTelefono(),
-                        empleado.getPosicion(),
-                        empleado.getFechaContratacion()
-                ))
+                        empleado.getPosicion()))
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(empleados);
@@ -95,8 +94,8 @@ public class EmpleadoController {
                     empleado.getDni(),
                     empleado.getEmail(),
                     empleado.getTelefono(),
-                    empleado.getPosicion(),
-                    empleado.getFechaContratacion()
+                    empleado.getPosicion()
+
             );
             return ResponseEntity.ok(empleadoDTO);
         } else {
@@ -135,10 +134,6 @@ public class EmpleadoController {
                 empleado.setPosicion(empleadoDTO.getPosicion());
             }
 
-            if (empleadoDTO.getFechaContratacion() != null) {
-                empleado.setFechaContratacion(empleadoDTO.getFechaContratacion());
-            }
-
             empleado = empleadoService.save(empleado);
 
             EmpleadoDTO responseDTO = new EmpleadoDTO(
@@ -148,8 +143,8 @@ public class EmpleadoController {
                     empleado.getDni(),
                     empleado.getEmail(),
                     empleado.getTelefono(),
-                    empleado.getPosicion(),
-                    empleado.getFechaContratacion()
+                    empleado.getPosicion()
+
             );
 
             return ResponseEntity.ok(responseDTO);

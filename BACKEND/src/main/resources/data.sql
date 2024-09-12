@@ -9,10 +9,10 @@ INSERT INTO EMPRESA (nombre, cif, direccion, telefono, email, pagina_web, sector
 ('WebMasters Ltd', 'M55667788', 'Av. Web 202', '321654987', 'contact@webmasters.com', 'www.webmasters.com', 'Desarrollo Web', 'Argentina');
 
 -- Insertar empleados
-INSERT INTO EMPLEADO (id_empresa, nombre, apellido, dni, email, telefono, posicion, fecha_contratacion) VALUES
-(1, 'Juan', 'Pérez', '12345678A', 'juan.perez@techsolutions.com', '111222333', 'Desarrollador Backend', '2022-05-10'),
-(1, 'Ana', 'Gómez', '87654321B', 'ana.gomez@techsolutions.com', '444555666', 'Analista de Sistemas', '2021-11-15'),
-(2, 'Carlos', 'López', '45678901C', 'carlos.lopez@softdev.com', '777888999', 'Desarrollador Frontend', '2023-01-20'),
-(3, 'María', 'Rodríguez', '78901234D', 'maria.rodriguez@dataanalytics.com', '222333444', 'Científica de Datos', '2021-07-30'),
-(4, 'Luis', 'Fernández', '98765432E', 'luis.fernandez@aiinnovators.com', '555666777', 'Ingeniero de Machine Learning', '2023-03-12'),
-(5, 'Elena', 'Martínez', '32198765F', 'elena.martinez@webmasters.com', '888999000', 'Desarrolladora Web', '2022-08-22');
+INSERT INTO EMPLEADO (id_empresa, nombre, apellido, dni, email, telefono, posicion) VALUES
+(1, 'Juan', 'Pérez', '12345678A', 'juan.perez@techsolutions.com', '111222333', 'Desarrollador Backend'),
+(1, 'Ana', 'Gómez', '87654321B', 'ana.gomez@techsolutions.com', '444555666', 'Analista de Sistemas'),
+(2, 'Carlos', 'López', '45678901C', 'carlos.lopez@softdev.com', '777888999', 'Desarrollador Frontend'),
+(3, 'María', 'Rodríguez', '78901234D', 'maria.rodriguez@dataanalytics.com', '222333444', 'Científica de Datos'),
+(4, 'Luis', 'Fernández', '98765432E', 'luis.fernandez@aiinnovators.com', '555666777', 'Ingeniero de Machine Learning'),
+(5, 'Elena', 'Martínez', '32198765F', 'elena.martinez@webmasters.com', '888999000', 'Desarrolladora Web');

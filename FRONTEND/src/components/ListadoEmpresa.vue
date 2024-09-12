@@ -1,7 +1,8 @@
 <template>
+
   <div v-if="toastVisible" class="toast">
     {{ toastMessage }}
-  </div>
+  </div class="content-wrapper">
   <div>
     <h1 class="title"><br>Gestión de Empresas<br></h1>
 
@@ -18,6 +19,7 @@
 
     <!-- Tabla de empresas -->
     <div class="table-container">
+      <div class="scrollable-table">
       <table>
         <thead>
           <tr>
@@ -60,6 +62,7 @@
         </tbody>
       </table>
     </div>
+  </div>
 
     <!-- Modal de confirmación para borrar empresa -->
     <div v-if="modalBorrarEmpresaVisible" class="modal">
@@ -135,11 +138,11 @@
             <td>{{ empleado.nombre }}</td>
             <td><button @click="verDetalles(empleado)">Ver detalles</button></td>
             <td><button @click="editarEmpleado(empleado)">Editar</button></td>
-            <td><button @click="confirmarBorrarEmpleado(empleado)">Borrar</button></td>
+            <td><button class="action-button delete-button" @click="confirmarBorrarEmpleado(empleado)">Borrar</button></td>
           </tr>
         </tbody>
       </table>
-      <button @click="cerrarModalEmpleados">Cerrar</button>
+      <button class="action-button delete-button" @click="cerrarModalEmpleados">Cerrar</button>
     </div>
 
     <!-- Modal para ver detalles del empleado -->
@@ -293,9 +296,6 @@ export default {
     this.fetchEmpleados();
   },
   methods: {
-   
-  
-
     async fetchEmpresas() {
       try {
         const response = await axios.get('/api/empresas');
@@ -305,7 +305,6 @@ export default {
         console.error('Error al obtener las empresas:', error);
       }
     },
-
 
     async fetchEmpleados() {
       if (this.empresaSeleccionada) {
@@ -336,7 +335,6 @@ export default {
         await axios.put(`/api/empresas/${this.empresaSeleccionada.id}`, this.empresaSeleccionada);
         this.toastMessage = 'Empresa actualizada correctamente';
         this.toastVisible = true;
-
         setTimeout(() => {
           this.toastVisible = false;
         }, 3000);
@@ -355,14 +353,8 @@ export default {
     },
 
     abrirModalCrearEmpresa() {
+      this.resetForm();
       this.modalCrearEmpresaVisible = true;
-    },
-
-    filterByName() {
-      const searchLower = this.search.toLowerCase();
-      this.filteredEmpresas = this.empresas.filter(empresa =>
-        empresa.nombre.toLowerCase().startsWith(searchLower)
-      );
     },
 
     resetForm() {
@@ -378,10 +370,6 @@ export default {
       };
     },
 
-    cerrarModalCrearEmpresa() {
-      this.modalCrearEmpresaVisible = false;
-    },
-
     sortAlphabetically() {
       this.filteredEmpresas.sort((a, b) => a.nombre.localeCompare(b.nombre));
     },
@@ -389,6 +377,13 @@ export default {
     resetFilters() {
       this.search = '';
       this.filteredEmpresas = [...this.empresas];
+    },
+
+    filterByName() {
+      const searchLower = this.search.toLowerCase();
+      this.filteredEmpresas = this.empresas.filter(empresa =>
+        empresa.nombre.toLowerCase().startsWith(searchLower)
+      );
     },
 
     mostrarEmpleados(empresa) {
@@ -512,7 +507,14 @@ export default {
 };
 </script>
 
+
 <style scoped>
+
+.container {
+  margin-top: -50%;
+  padding: 20px;
+}
+
 .toast {
   z-index: 9999;
   background-color: #5c99d6;
@@ -576,7 +578,7 @@ button {
 }
 
 button:hover {
-  background-color: #4a87c4;
+  background-color: #4caf50;
 }
 
 .modal {
@@ -766,7 +768,7 @@ p {
 
 button {
   align-self: center;
-  background-color: #5c99d6;
+  background-color: #4caf50;
   color: white;
   padding: 10px 20px;
   border: none;
@@ -776,7 +778,7 @@ button {
 }
 
 button:hover {
-  background-color: #4a87c4;
+  background-color: #4caf50;
 }
 
 .modal-content p strong {
@@ -789,4 +791,10 @@ button:hover {
   max-width: 250px;
   word-wrap: break-word;
 }
+.scrollable-table {
+  max-height: 600px; 
+  overflow-y: auto; 
+}
+
+
 </style>

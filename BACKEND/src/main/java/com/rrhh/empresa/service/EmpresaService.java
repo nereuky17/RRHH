@@ -87,8 +87,7 @@ public class EmpresaService {
                     empleado.getDni(),
                     empleado.getEmail(),
                     empleado.getTelefono(),
-                    empleado.getPosicion(),
-                    empleado.getFechaContratacion() // Pasamos LocalDate directamente
+                    empleado.getPosicion()
                 ))
                 .collect(Collectors.toList())
         );

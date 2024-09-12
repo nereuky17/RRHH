@@ -1,6 +1,6 @@
 package com.rrhh.empresa.dto;
 
-import java.time.LocalDate;
+
 
 public class EmpleadoDTO {
 
@@ -11,13 +11,13 @@ public class EmpleadoDTO {
     private String email;
     private String telefono;
     private String posicion;
-    private LocalDate fechaContratacion; 
+  
     // Constructor vacío
     public EmpleadoDTO() {
     }
 
     // Constructor con parámetros
-    public EmpleadoDTO(Long id, String nombre, String apellido, String dni, String email, String telefono, String posicion, LocalDate fechaContratacion) {
+    public EmpleadoDTO(Long id, String nombre, String apellido, String dni, String email, String telefono, String posicion) {
         this.id = id;
         this.nombre = nombre;
         this.apellido = apellido;
@@ -25,7 +25,7 @@ public class EmpleadoDTO {
         this.email = email;
         this.telefono = telefono;
         this.posicion = posicion;
-        this.fechaContratacion = fechaContratacion;
+      
     }
 
     // Getters y Setters
@@ -85,11 +85,5 @@ public class EmpleadoDTO {
         this.posicion = posicion;
     }
 
-    public LocalDate getFechaContratacion() {
-        return fechaContratacion;
-    }
-
-    public void setFechaContratacion(LocalDate fechaContratacion) {
-        this.fechaContratacion = fechaContratacion;
-    }
+    
 }
