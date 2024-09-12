@@ -128,17 +128,30 @@
         <thead>
           <tr>
             <th>Nombre</th>
-            <th>Detalles</th>
-            <th>Editar</th>
-            <th>Borrar</th>
+            <th>Apellido</th>
+              <th>DNI</th>
+              <th>Email</th>
+              <th>Teléfono</th>
+              <th>Posición</th>
+              <th>Acciones</th>
+          
           </tr>
         </thead>
         <tbody>
           <tr v-for="empleado in empleados" :key="empleado.id">
             <td>{{ empleado.nombre }}</td>
-            <td><button @click="verDetalles(empleado)">Ver detalles</button></td>
-            <td><button @click="editarEmpleado(empleado)">Editar</button></td>
-            <td><button class="action-button delete-button" @click="confirmarBorrarEmpleado(empleado)">Borrar</button></td>
+            <td>{{ empleado.apellido }}</td>
+              <td>{{ empleado.dni }}</td>
+              <td>{{ empleado.email }}</td>
+              <td>{{ empleado.telefono }}</td>
+              <td>{{ empleado.posicion }}</td>
+              <td>     
+            <button @click="verDetalles(empleado)">Ver detalles</button>
+            <button @click="editarEmpleado(empleado)">Editar</button>
+            <button class="action-button delete-button" @click="confirmarBorrarEmpleado(empleado)">Borrar</button>
+
+              </td>
+      
           </tr>
         </tbody>
       </table>
@@ -534,8 +547,8 @@ export default {
   background-color: white;
   padding: 20px;
   z-index: 1000;
-  width: 80%;
-  max-width: 600px;
+  width: 100%;
+  max-width: 900px;
   border-radius: 8px;
   background-color: rgba(200, 200, 200, 0.8);
   ;

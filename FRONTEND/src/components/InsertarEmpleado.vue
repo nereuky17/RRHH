@@ -81,39 +81,44 @@
       </div>
 
       <!-- Modal para editar empleado -->
-      <div v-if="modalEditarVisible" class="modal" @click.self="cerrarModalEditar">
-        <div class="modal-content">
-          <span class="close" @click="cerrarModalEditar">&times;</span>
-          <h2>Editar Empleado</h2>
-          <form @submit.prevent="guardarCambiosEmpleado">
-            <div class="form-group">
-              <label for="nombre">Nombre:</label>
-              <input type="text" v-model="empleadoSeleccionado.nombre" required />
-            </div>
-            <div class="form-group">
-              <label for="apellido">Apellido:</label>
-              <input type="text" v-model="empleadoSeleccionado.apellido" />
-            </div>
-            <div class="form-group">
-              <label for="dni">DNI:</label>
-              <input type="text" v-model="empleadoSeleccionado.dni" required />
-            </div>
-            <div class="form-group">
-              <label for="email">Email:</label>
-              <input type="email" v-model="empleadoSeleccionado.email" required />
-            </div>
-            <div class="form-group">
-              <label for="telefono">Teléfono:</label>
-              <input type="text" v-model="empleadoSeleccionado.telefono" required />
-            </div>
-            <div class="form-group">
-              <label for="posicion">Posición:</label>
-              <input type="text" v-model="empleadoSeleccionado.posicion" required />
-            </div>
-            <button type="submit">Guardar cambios</button>
-          </form>
+      <div v-if="modalEditarVisible" class="modal">
+    <div class="modal-content">
+      <span class="close" @click="cerrarModalEditar">&times;</span>
+      <h2>Editar Empleado</h2>
+      <form @submit.prevent="guardarCambiosEmpleado">
+        <div class="form-group">
+          <label for="nombre">Nombre:</label>
+          <input type="text" v-model="empleadoEditado.nombre" required />
         </div>
-      </div>
+        <div class="form-group">
+          <label for="apellido">Apellido:</label>
+          <input type="text" v-model="empleadoEditado.apellido" />
+        </div>
+        <div class="form-group">
+          <label for="dni">DNI:</label>
+          <input type="text" v-model="empleadoEditado.dni" required />
+        </div>
+        <div class="form-group">
+          <label for="email">Email:</label>
+          <input type="email" v-model="empleadoEditado.email" required />
+        </div>
+        <div class="form-group">
+          <label for="telefono">Teléfono:</label>
+          <input type="text" v-model="empleadoEditado.telefono" required />
+        </div>
+        <div class="form-group">
+          <label for="posicion">Posición:</label>
+          <input type="text" v-model="empleadoEditado.posicion" required />
+        </div>
+        <div class="form-group button-group">
+          <button type="submit">Guardar cambios</button>
+          <button type="button" @click="cerrarModalEditar">Cancelar</button>
+        </div>
+      </form>
+  </div>
+</div>
+
+
 
       <!-- Modal para crear empleado -->
       <div v-if="modalCrearEmpleadoVisible" class="modal" @click.self="cerrarModalCrearEmpleado">
@@ -164,7 +169,7 @@
 
       <div class="button-group">
         <button class="action-button" type="submit">Guardar</button>
-        <button class="action-button cancel-button" @click="cerrarModalCrearEmpleado">Cancelar</button>
+        <button class="action-button delete-button" @click="cerrarModalCrearEmpleado">Cancelar</button>
       </div>
           </form>
         </div>
@@ -177,7 +182,6 @@
 import axios from 'axios';
 import { ref } from 'vue';
 import { useToast } from 'vue-toastification';
-
 export default {
   setup() {
     const toast = useToast();
@@ -192,6 +196,7 @@ export default {
     const modalEditarVisible = ref(false);
     const modalBorrarVisible = ref(false);
     const empresaSeleccionada = ref(null);
+
     const nuevoEmpleado = ref({
       idEmpresa: '',
       nombre: '',
@@ -202,33 +207,76 @@ export default {
       posicion: ''
     });
 
-
     const empleadoSeleccionado = ref(null);
+    const empleadoEditado = ref(null);  
 
     const fetchEmpresas = async () => {
       try {
         const response = await axios.get('/api/empresas');
         empresas.value = response.data;
-        console.log("Empresas cargadas:", empresas.value);
       } catch (error) {
         console.error('Error al obtener empresas:', error);
       }
     };
-
-   
-
 
     const fetchEmpleados = async () => {
       try {
         const response = await axios.get('/api/empleados');
         empleados.value = response.data;
         filteredEmpleados.value = [...empleados.value];
-        console.log('Empleados cargados:', empleados.value);
       } catch (error) {
         console.error('Error al obtener empleados:', error);
       }
     };
 
+    // Función para abrir el modal de edición
+    const abrirModalEditar = (empleado) => {
+      empleadoSeleccionado.value = empleado;  
+      empleadoEditado.value = { ...empleado };  
+      modalEditarVisible.value = true;
+    };
+
+    // Función para cerrar el modal de edición sin guardar cambios
+    const cerrarModalEditar = () => {
+      empleadoEditado.value = null;  
+      modalEditarVisible.value = false;
+    };
+
+    // Función para guardar los cambios realizados en el empleado
+    const guardarCambiosEmpleado = async () => {
+      try {
+        await axios.put(`/api/empleados/${empleadoEditado.value.id}`, empleadoEditado.value);
+        
+        Object.assign(empleadoSeleccionado.value, empleadoEditado.value);
+
+        toast.success('Empleado actualizado correctamente');
+        modalEditarVisible.value = false;
+
+        fetchEmpleados();  // Actualizamos la lista de empleados
+      } catch (error) {
+        console.error('Error al actualizar el empleado:', error);
+        toast.error('Error al actualizar el empleado');
+      }
+    };
+
+    const abrirModalCrearEmpleado = () => {
+      // Resetear los campos antes de abrir el modal
+      nuevoEmpleado.value = {
+        nombre: '',
+        apellido: '',
+        dni: '',
+        email: '',
+        telefono: '',
+        posicion: ''
+      };
+      empresaSeleccionada.value = null;
+
+      modalCrearEmpleadoVisible.value = true;
+    };
+
+    const cerrarModalCrearEmpleado = () => {
+      modalCrearEmpleadoVisible.value = false;
+    };
 
     const crearEmpleado = async () => {
       if (!empresaSeleccionada.value) {
@@ -269,25 +317,6 @@ export default {
       }
     };
 
-    const abrirModalCrearEmpleado = () => {
-      // Resetear los campos antes de abrir el modal
-      nuevoEmpleado.value = {
-        nombre: '',
-        apellido: '',
-        dni: '',
-        email: '',
-        telefono: '',
-        posicion: ''
-      };
-      empresaSeleccionada.value = null;
-
-      modalCrearEmpleadoVisible.value = true;
-    };
-
-    const cerrarModalCrearEmpleado = () => {
-      modalCrearEmpleadoVisible.value = false;
-    };
-
     const abrirModalDetalles = empleado => {
       empleadoSeleccionado.value = empleado;
       modalDetallesVisible.value = true;
@@ -295,34 +324,6 @@ export default {
 
     const cerrarModalDetalles = () => {
       modalDetallesVisible.value = false;
-    };
-
-    const abrirModalEditar = empleado => {
-      empleadoSeleccionado.value = empleado;
-      modalEditarVisible.value = true;
-    };
-
-    const cerrarModalEditar = () => {
-      modalEditarVisible.value = false;
-    };
-
-
-
-    const guardarCambiosEmpleado = async () => {
-      try {
-        await axios.put(`/api/empleados/${empleadoSeleccionado.value.id}`, empleadoSeleccionado.value);
-        toastMessage.value = 'Empleado actualizado correctamente';
-        toastVisible.value = true;
-
-        setTimeout(() => {
-          toastVisible.value = false;
-        }, 3000);
-
-        modalEditarVisible.value = false;
-        fetchEmpleados();
-      } catch (error) {
-        console.error('Error al actualizar el empleado:', error);
-      }
     };
 
     const abrirModalBorrar = empleado => {
@@ -373,6 +374,8 @@ export default {
     return {
       empresas,
       empleados,
+      empleadoSeleccionado,
+      empleadoEditado,  
       filteredEmpleados,
       search,
       toastVisible,
@@ -380,10 +383,9 @@ export default {
       modalCrearEmpleadoVisible,
       modalDetallesVisible,
       modalEditarVisible,
-      nuevoEmpleado,
       modalBorrarVisible,
+      nuevoEmpleado,
       empresaSeleccionada,
-      empleadoSeleccionado,
       abrirModalCrearEmpleado,
       cerrarModalCrearEmpleado,
       crearEmpleado,
@@ -398,8 +400,6 @@ export default {
       filterByName,
       sortAlphabetically,
       resetFilters,
-      
-
     };
   }
 };
@@ -407,6 +407,10 @@ export default {
 
 <style scoped>
 
+.butt{
+margin-top: 20px; 
+padding: 10px 20px;
+}
 .cancel-button {
   background-color: #aaa;
   margin-left: 10px;
@@ -469,7 +473,7 @@ export default {
   border-radius: 8px;
   width: 600px;  
   max-width: 90%;
-  min-height: 600px;  
+  min-height: 200px;  
   text-align: center;
   border: 2px solid #5c99d6;
   display: flex;
@@ -478,6 +482,7 @@ export default {
 }
 
 .form-group {
+
   margin-bottom: 20px; 
 }
 

@@ -40,6 +40,7 @@ html, body {
   padding: 0;
   width: 100%;
   height: 100%;
+  overflow-x: hidden; /* Oculta el scroll horizontal */
 }
 
 #app {
@@ -91,28 +92,60 @@ nav a:first-of-type {
   border: 0;
 }
 
-/* Estilo para el fondo de bienvenida que solo aparece en "/" */
 .welcome-background {
-  background-image: url('@/assets/fondo.png');
-  background-size: 170% auto; /* Cambia el tamaño para extender aún más la imagen hacia la izquierda */
-  background-position: -10% center; /* Desplaza la imagen más a la izquierda */
-  background-repeat: no-repeat;
+  position: relative;
   width: 100vw;
-  height: 100vh;
+  height: 120vh; /* Aumenta el alto para hacer la imagen más grande hacia abajo */
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-.overlay {
-  background-color: rgba(255, 255, 255, 0.7);
-  padding: 20px;
-  border-radius: 10px;
-  text-align: center;
-  max-width: 800px;
-  width: 90%;
+.welcome-background::before {
+  content: "";
+  position: absolute;
+  top: -30%; 
+  left: 0;
+  width: 150%; 
+  height: 135vh; 
+  background-image: url('@/assets/fondo.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  transform: translateX(-30%); 
+  z-index: -1;
 }
 
+/* Ajusta el contenedor del texto */
+.overlay {
+  background-color: rgba(255, 255, 255, 0.85); 
+  padding: 40px;
+  border-radius: 10px;
+  max-width: 90%; 
+  text-align: center;
+  position: absolute;
+  z-index: 1;
+}
+
+/* Centrando verticalmente el texto */
+.welcome-background .overlay {
+  top: 50%;
+  left: 50%;
+  transform: translate(-80%, -50%);
+}
+
+.welcome-background .overlay h1 {
+  font-size: 3rem;
+  text-align: center;
+  text-decoration: underline; 
+  margin-bottom: 1rem;
+}
+
+.welcome-background .overlay p {
+  font-weight: bold; 
+  font-size: 1.8rem;
+  text-align: justify;
+}
 .titulo {
   font-size: 2.5rem;
   margin-bottom: 1rem;
@@ -120,7 +153,7 @@ nav a:first-of-type {
 }
 
 .descripcion {
-  font-size: 1.2rem;
+  font-size: 1.6rem;
   color: #333;
 }
 
