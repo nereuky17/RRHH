@@ -15,27 +15,27 @@ html, body {
   padding: 0;
   width: 100%;
   height: 100%;
-  overflow: hidden; /* Elimina cualquier tipo de scroll en la página */
+  overflow: hidden; 
 }
 
 .home {
 
-  background-size: cover; /* Asegura que la imagen cubra todo el área */
+  background-size: cover; 
   background-position: center;
   background-repeat: no-repeat;
-  width: 100vw; /* Asegura que ocupe todo el ancho de la pantalla */
-  height: 100vh; /* Asegura que ocupe toda la altura de la pantalla */
+  width: 100vw; 
+  height: 100vh; 
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
 .overlay {
-  background-color: rgba(255, 255, 255, 0.7); /* Fondo semitransparente para el texto */
+  background-color: rgba(255, 255, 255, 0.7); 
   padding: 20px;
   border-radius: 10px;
   max-width: 800px;
-  width: 90%; /* Tamaño responsivo */
+  width: 90%; 
   text-align: center;
 }
 
