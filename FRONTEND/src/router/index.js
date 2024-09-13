@@ -13,12 +13,12 @@ const router = createRouter({
       component: Home
     },
     {
-      path: '/listado',
+      path: '/empresas',
       name: 'listado',
      component: ListadoEmpresa
     },
     {
-      path: '/insertar',
+      path: '/empleados',
       name: 'insertar',
       component: InsertarEmpleado
     }

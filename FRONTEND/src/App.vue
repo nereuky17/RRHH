@@ -10,8 +10,8 @@ const route = useRoute();
       <div class="wrapper">
         <nav>
           <RouterLink to="/">Inicio</RouterLink>
-          <RouterLink to="/listado">Empresas</RouterLink>
-          <RouterLink to="/insertar">Empleados</RouterLink>
+          <RouterLink to="/empresas">Empresas</RouterLink>
+          <RouterLink to="/empleados">Empleados</RouterLink>
         </nav>
       </div>
     </header>
